@@ -1,0 +1,73 @@
+x-comfyui-build: &comfyui-build
+  context: .
+  dockerfile: Dockerfile
+  args:
+    PYTHON_IMAGE: ${PYTHON_IMAGE:-python:3.13-slim-bookworm}
+    TORCH_INDEX_URL: ${TORCH_INDEX_URL:-https://download.pytorch.org/whl/cu130}
+    TORCH_PACKAGES: ${TORCH_PACKAGES:-torch torchvision torchaudio}
+    UID: ${UID:-1000}
+    GID: ${GID:-1000}
+
+x-comfyui-common: &comfyui-common
+  image: ${COMFYUI_IMAGE:-zients/comfyui:local}
+  build: *comfyui-build
+  environment:
+    COMFYUI_MODELS_DIR: /mnt/comfyui/models
+    COMFYUI_CUSTOM_NODES_DIR: /mnt/comfyui/custom_nodes
+  volumes:
+    - type: bind
+      source: ${COMFYUI_MODELS_DIR:-./models}
+      target: /mnt/comfyui/models
+      read_only: true
+    - type: bind
+      source: ${COMFYUI_CUSTOM_NODES_DIR:-./custom_nodes}
+      target: /mnt/comfyui/custom_nodes
+      read_only: true
+    - type: bind
+      source: ${COMFYUI_INPUT_DIR:-./input}
+      target: /data/input
+    - type: bind
+      source: ${COMFYUI_OUTPUT_DIR:-./output}
+      target: /data/output
+    - type: bind
+      source: ${COMFYUI_TEMP_DIR:-./temp}
+      target: /data/temp
+    - type: bind
+      source: ${COMFYUI_USER_DIR:-./user}
+      target: /data/user
+  ports:
+    - "${COMFYUI_HOST:-127.0.0.1}:${COMFYUI_HOST_PORT:-8188}:8188"
+  restart: unless-stopped
+
+services:
+  comfyui:
+    <<: *comfyui-common
+    container_name: ${COMFYUI_CONTAINER_NAME:-comfyui}
+    environment:
+      COMFYUI_MODELS_DIR: /mnt/comfyui/models
+      COMFYUI_CUSTOM_NODES_DIR: /mnt/comfyui/custom_nodes
+      COMFYUI_ARGS: ${COMFYUI_ARGS:-}
+    devices:
+      - nvidia.com/gpu=all
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8188/system_stats', timeout=5).read()"
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+
+  # CPU-only smoke service. Uncomment when testing startup on a host without
+  # Docker GPU passthrough.
+  # comfyui-cpu:
+  #   <<: *comfyui-common
+  #   container_name: ${COMFYUI_CPU_CONTAINER_NAME:-comfyui-cpu}
+  #   environment:
+  #     COMFYUI_MODELS_DIR: /mnt/comfyui/models
+  #     COMFYUI_CUSTOM_NODES_DIR: /mnt/comfyui/custom_nodes
+  #     COMFYUI_ARGS: ${COMFYUI_CPU_ARGS:---cpu --disable-all-custom-nodes}
+  #   ports:
+  #     - "${COMFYUI_CPU_HOST:-127.0.0.1}:${COMFYUI_CPU_HOST_PORT:-8189}:8188"
