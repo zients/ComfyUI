@@ -1,0 +1,59 @@
+# Git and local development state
+.git
+.gitignore
+.dockerignore
+.venv
+venv*/
+.env
+__pycache__/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Runtime data and generated files
+input/
+output/
+temp/
+user/
+*.log
+web_custom_versions/
+filtered-openapi.yaml
+uv.lock
+.comfy_environment
+extra_model_paths.yaml
+docs/superpowers/
+civitai_models/
+scripts/generate/**
+
+# Keep tracked model placeholders and configs, but exclude local model weights.
+models/**/*.ckpt
+models/**/*.pt
+models/**/*.pt2
+models/**/*.bin
+models/**/*.pth
+models/**/*.safetensors
+models/**/*.pkl
+models/**/*.sft
+models/**/*.gguf
+models/**/*.onnx
+models/**/*.engine
+
+# Local custom nodes are ignored by Git and must not be vendored into the image.
+# If upstream adds tracked files under custom_nodes/, update this allowlist.
+custom_nodes/**
+!custom_nodes/
+!custom_nodes/example_node.py.example
+!custom_nodes/websocket_image_save.py
+
+# Editor and OS state
+.vs/
+.vscode/
+.idea/
+.DS_Store
+*~
+*.swp
+*.swo
