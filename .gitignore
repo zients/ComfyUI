@@ -26,3 +26,7 @@ uv.lock
 .comfy_environment
 docs/superpowers/
 .env
+scripts/generate/*
+!scripts/generate/.gitkeep
+!scripts/generate/generate_images.py
+!scripts/generate/example_prompts.toml

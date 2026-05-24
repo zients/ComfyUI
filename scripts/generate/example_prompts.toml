@@ -1,0 +1,25 @@
+[defaults]
+negative = """
+low quality, blurry, bad anatomy, distorted, text, watermark
+"""
+
+[[prompts]]
+name = "sunlit_garden"
+positive = """
+a small sunlit garden, colorful flowers, stone path, soft morning light,
+clean anime illustration, best quality
+"""
+
+[[prompts]]
+name = "cozy_cabin"
+positive = """
+a cozy wooden cabin in the mountains, warm window light, pine trees,
+peaceful evening sky, clean anime background art
+"""
+
+[[prompts]]
+name = "city_cafe"
+positive = """
+a quiet city cafe, rain outside the window, warm interior lighting,
+coffee cup on the table, detailed anime illustration
+"""
